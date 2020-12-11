@@ -13,7 +13,7 @@ jobs:
           submodules: recursive
       - uses: msys2/setup-msys2@v2
         with:
-          install: autoconf automake bison flex git libtool gcc mingw-w64-x86_64-toolchain
+          install: autoconf automake bison flex git libtool gcc
           update: true
       - shell: msys2 {0}
         run: |-
