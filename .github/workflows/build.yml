@@ -1,0 +1,36 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - msystem: MINGW64
+            arch: x86_64
+          - msystem: MINGW32
+            arch: i686
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          install: git base-devel mingw-w64-${{ matrix.arch }}-toolchain
+          update: true
+      - shell: msys2 {0}
+        run: |-
+          autoreconf -i
+          ./configure --with-oniguruma=builtin --disable-shared --enable-static --enable-all-static
+          make
+          ls -al
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.msystem }}-packages
+          path: jq.exe
